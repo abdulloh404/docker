@@ -1,0 +1,14 @@
+FROM jenkins/jenkins:lts-jdk21
+
+USER root
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends docker.io git ca-certificates curl \
+ && rm -rf /var/lib/apt/lists/*
+
+# รับค่า GID ของ docker จากโฮสต์
+ARG DOCKER_GID=998
+# ถ้ามี group 'docker' อยู่แล้ว ให้เปลี่ยน GID ให้ตรงกับโฮสต์
+RUN groupmod -g ${DOCKER_GID} docker || groupadd -g ${DOCKER_GID} docker \
+ && usermod -aG docker jenkins
+
+USER jenkins
